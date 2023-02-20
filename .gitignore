@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+#Navtor generated proto files
+protocol.grpc.pb.cc
+protocol.grpc.pb.h
+protocol.pb.cc
+protocol.pb.h

@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package CrtServicePilot;
+
+// The service definition.
+service CrtService {
+  // Sends a request
+  rpc generateMapImageByCenterAndScale (gMIBCAS) returns (gMIBCASReply) {}
+}
+
+// The request message containing the func parameters
+message gMIBCAS {
+  string requester = 120;
+  double latCenter = 1;
+  double lonCenter = 2;
+  double scaleDenom = 3;
+  double rotationDeg = 4;
+  uint32 sizeX= 5;
+  uint32 sizeY= 6;
+  string fmt = 7;
+  string display = 8;
+
+}
+
+// The response message containing the result
+message gMIBCASReply {
+  bool result = 1;
+  bytes resultData = 2;
+
+}
