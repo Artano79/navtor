@@ -37,4 +37,4 @@ protocol.grpc.pb.h
 protocol.pb.cc
 protocol.pb.h
 navtor-grpc-client
-
+*.png

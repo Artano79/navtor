@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <grpcpp/grpcpp.h>
 
 #include "protocol.grpc.pb.h"
@@ -15,34 +16,7 @@ class GreeterClient {
   GreeterClient(std::shared_ptr<Channel> channel)
       : stub_(CrtService::NewStub(channel)) {}
 
-  // Assembles the client's payload, sends it and presents the response back
-  // from the server.
-  std::string SayHello(const std::string& user) {
-    // Data we are sending to the server.
-    gMIBCAS request;
-    //request.set_name(user);
-
-    // Container for the data we expect from the server.
-    gMIBCASReply reply;
-
-    // Context for the client. It could be used to convey extra information to
-    // the server and/or tweak certain RPC behaviors.
-    ClientContext context;
-
-    // The actual RPC.
-    Status status = stub_->generateMapImageByCenterAndScale(&context, request, &reply);
-
-    // Act upon its status.
-    if (status.ok()) {
-      return (reply.result() ? "Result OK" : "Result FAIL");
-    } else {
-      std::cout << status.error_code() << ": " << status.error_message()
-                << std::endl;
-      return "RPC failed";
-    }
-  }
-
-    std::string* generateMapImageByCenterAndScale(
+    const std::string& generateMapImageByCenterAndScale(
         const double& lat, const double& lon, const double& scale, 
 		const uint32_t x, const uint32_t y, 
 		const double rot, 
@@ -73,15 +47,17 @@ class GreeterClient {
         // Act upon its status.
         if (status.ok())
         {
-            //std::cout << reply.resultdata().size() << "bytes "<< std::endl;
-            return reply.release_resultdata();
+			std::cout << "Chart recieved: lat= " << lat << " lon=" << lon << " scale=" << scale;
+			std::cout << " x=" << x << " y=" << y << " rot" << rot; 
+			std::cout << " fmt = " << fmt << " display=" <<  display;
+            return reply.resultdata();
         }
         else
         {
-            //std::cout << status.error_code() << ": " << status.error_message() << std::endl;
-            //assure_(!"RPC failed");
-        }
-        return nullptr;
+			//static std::string global_string("fghaksdjfghikaiklg");
+			//return global_string;
+			throw std::runtime_error("Chart server remote call FAIL"); 
+		}
     }
 
  private:
@@ -115,12 +91,24 @@ int main(int argc, char** argv) {
   } else {
     target_str = "localhost:50051";
   }
-  GreeterClient greeter(
-      grpc::CreateChannel(target_str, grpc::InsecureChannelCredentials()));
-  std::string user("world");
-  std::string reply = greeter.SayHello(user);
-  std::cout << "Greeter received: " << reply << std::endl;
+	try{
+		GreeterClient greeter(grpc::CreateChannel(target_str, grpc::InsecureChannelCredentials()));
+		const std::string& reply = greeter.generateMapImageByCenterAndScale(60.0,30.0,1.e4,640,480,
+									0.0,"image/png","Standard");
+		//if (!std::filesystem::exists(outDir.c_str()))
+		//	std::filesystem::create_directories(outDir.c_str());
 
+
+		std::string name = "./out.png";
+
+		std::ofstream fout(name, std::ios::binary);
+
+		fout.write(reply.c_str(), reply.size());
+	
+	}
+	catch(const std::exception& e){
+		std::cout << "Exception: " << e.what() << std::endl;
+	}
   return 0;
 }
 
