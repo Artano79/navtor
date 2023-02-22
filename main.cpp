@@ -16,7 +16,7 @@ class GreeterClient {
   GreeterClient(std::shared_ptr<Channel> channel)
       : stub_(CrtService::NewStub(channel)) {}
 
-    const std::string& generateMapImageByCenterAndScale(
+    const std::string generateMapImageByCenterAndScale(
         const double& lat, const double& lon, const double& scale, 
 		const uint32_t x, const uint32_t y, 
 		const double rot, 
@@ -49,8 +49,10 @@ class GreeterClient {
         {
 			std::cout << "Chart recieved: lat= " << lat << " lon=" << lon << " scale=" << scale;
 			std::cout << " x=" << x << " y=" << y << " rot" << rot; 
-			std::cout << " fmt = " << fmt << " display=" <<  display;
-            return reply.resultdata();
+			std::cout << " fmt = " << fmt << " display=" <<  display << std::endl;
+            
+			std::cout << "Status=" << reply.result() << " Size=" << reply.resultdata().size() << std::endl;
+			return reply.resultdata();
         }
         else
         {
@@ -93,13 +95,13 @@ int main(int argc, char** argv) {
   }
 	try{
 		GreeterClient greeter(grpc::CreateChannel(target_str, grpc::InsecureChannelCredentials()));
-		const std::string& reply = greeter.generateMapImageByCenterAndScale(60.0,30.0,1.e4,640,480,
-									0.0,"image/png","Standard");
+		const std::string reply = greeter.generateMapImageByCenterAndScale(60.0,30.0,1.e4,640,480,
+									0.0,"image/jpeg","Standard");
 		//if (!std::filesystem::exists(outDir.c_str()))
 		//	std::filesystem::create_directories(outDir.c_str());
 
 
-		std::string name = "./out.png";
+		std::string name = "./out.jpeg";
 
 		std::ofstream fout(name, std::ios::binary);
 
