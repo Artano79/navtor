@@ -67,35 +67,30 @@ class GreeterClient {
 };
 
 int main(int argc, char** argv) {
-  // Instantiate the client. It requires a channel, out of which the actual RPCs
-  // are created. This channel models a connection to an endpoint specified by
-  // the argument "--target=" which is the only expected argument.
-  // We indicate that the channel isn't authenticated (use of
-  // InsecureChannelCredentials()).
-  std::string target_str;
-  std::string arg_str("--target");
-  if (argc > 1) {
-    std::string arg_val = argv[1];
-    size_t start_pos = arg_val.find(arg_str);
-    if (start_pos != std::string::npos) {
-      start_pos += arg_str.size();
-      if (arg_val[start_pos] == '=') {
-        target_str = arg_val.substr(start_pos + 1);
-      } else {
-        std::cout << "The only correct argument syntax is --target="
-                  << std::endl;
-        return 0;
-      }
-    } else {
-      std::cout << "The only acceptable argument is --target=" << std::endl;
-      return 0;
-    }
-  } else {
-    target_str = "localhost:50051";
-  }
 	try{
+		std::string target_str;
+		std::string arg_str("--target");
+		if (argc > 1) {
+			std::string arg_val = argv[1];
+			size_t start_pos = arg_val.find(arg_str);
+			if (start_pos != std::string::npos) {
+				start_pos += arg_str.size();
+				if (arg_val[start_pos] == '=') {
+					target_str = arg_val.substr(start_pos + 1);
+				} 
+				else {
+			        throw std::runtime_error("The only correct argument syntax is --target=");
+				}
+			} 
+			else {
+				throw std::runtime_error("The only acceptable argument is --target=");
+			}
+		} 
+		else {
+		    target_str = "localhost:50051";
+		}
 		GreeterClient greeter(grpc::CreateChannel(target_str, grpc::InsecureChannelCredentials()));
-		const std::string reply = greeter.generateMapImageByCenterAndScale(60.0,30.0,1.e4,640,480,
+		const std::string reply = greeter.generateMapImageByCenterAndScale(60.0,30.0,1.e6,640,480,
 									0.0,"image/jpeg","Standard");
 		//if (!std::filesystem::exists(outDir.c_str()))
 		//	std::filesystem::create_directories(outDir.c_str());

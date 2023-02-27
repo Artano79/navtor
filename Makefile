@@ -1,5 +1,5 @@
 CC:=g++
-CCFLAGS:=-c
+CCFLAGS:=-c -Wall
 CCFLAGS+=-isystem /home/oper/.local/include
 CCFLAGS+=-std=gnu++14
 
@@ -40,7 +40,7 @@ protocol.grpc.pb.o: protocol.grpc.pb.cc protocol.grpc.pb.h
 	$(CC) $(CCFLAGS) protocol.grpc.pb.cc
 
 protofiles: protocol.proto
-	$(PROTOBUF) --grpc_out ./ --cpp_out ./ -I ./ --plugin=protoc-gen-grpc="$(gRPC_PROTO)/home/oper/.local/bin/grpc_cpp_plugin" protocol.proto
+	$(PROTOBUF) --grpc_out ./ --cpp_out ./ -I ./ --plugin=protoc-gen-grpc=$(gRPC_PATH)"/bin/grpc_cpp_plugin" protocol.proto
 
 clean:
 	rm *.o *.pb.cc *.pb.h navtor-grpc-client
